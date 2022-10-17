@@ -3,11 +3,11 @@ require('winston-mongodb')
 require('express-async-errors') //*3
 const config=require('config')
 
-const mongoTransport=winston.add(new winston.transports.MongoDB({
-    db:config.get('db'),
-    level:'error',
-    options: {useUnifiedTopology:true}
-}))
+// const mongoTransport=winston.add(new winston.transports.MongoDB({
+//     db:config.get('db'),
+//     level:'error',
+//     options: {useUnifiedTopology:true}
+// }))
 
 const logger=winston.createLogger({ //*4
         level:'info', //*7
