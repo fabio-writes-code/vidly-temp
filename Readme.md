@@ -94,15 +94,19 @@ TODO Deployment
 * In general deployment has two options. PaaS (Platform as a Service) or docker:
 * Paas: Heroku, google could platform, AWS, azure. Platform is provided so there's no need to worry about infrastructure, no need to worry about servers, reverse balances, proxys or restarting an app on crash.
 * Docker: Creates an image of the app, for deployment in your own webserver or any computer.
-* Heroku will run the application usign npm start which is manually added to package.json underneath test
-* In package.json underneath start, add engines{} object and specify the node version used by the app
-* Add code to gir repository
  -->
+
 <!-- 
 TODO Using Heroku
 * npm i helmet: Middleware package that covers against well know web vulnerabilities
 * npm i compression: compress the http response sent to the client
 * Middleware funcionality is stored in startUp/prod.js
+* Heroku will run the application usign npm start which is manually added to package.json underneath test
+* In package.json underneath start, add engines{} object and specify the node version used by the app
+* Add code to gir repository
+* cmd "Heroku create" creates a git remote in the local git environment, changes need to be pushed to heroku.
+* cmd "git remote -v" will display the remote repositories associated with the app
+* cmd "git push heroku master" to push changes in the app to heroku's main branch. Returns the http address for the app
  -->
 
  <!-- 

@@ -15,7 +15,7 @@ const logger=winston.createLogger({ //*4
         transports: [
             new winston.transports.File({filename:'logfile.log', level:'info'}),
             new winston.transports.Console({ colorize:true, prettyPrint:true }),
-            mongoTransport //*6
+            // mongoTransport //*6
         ],
         exceptionHandlers:[
             new winston.transports.File({filename:'exception.log'}),  //*9
