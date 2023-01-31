@@ -12,6 +12,12 @@ const returns = require("../routes/returns");
 const error = require("../middleware/error");
 
 module.exports = function (app) {
+    app.use(function (req, res, next) {
+        res.header("Access-Control-Allow-Origin", "http://localhost:3001");
+        res.header("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE");
+        res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, x-auth-token");
+        next();
+    });
     app.use(express.json());
     app.use("/api/rentals", rentals);
     app.use("/api/genres", genres);

@@ -1,43 +1,43 @@
 // TODO Authentication methods. usually named auth
 
-const express=require('express')
-const router=express.Router()
-const mongoose=require('mongoose');
-const {User}=require('../models/users');
-const _=require('lodash')
-const bcrypt=require('bcrypt')
-const Joi=require('joi')
-const jwt=require('jsonwebtoken')
-const config=require('config')
+const express = require('express')
+const router = express.Router()
+const mongoose = require('mongoose');
+const { User } = require('../models/users');
+const _ = require('lodash')
+const bcrypt = require('bcrypt')
+const Joi = require('joi')
+const jwt = require('jsonwebtoken')
+const config = require('config')
 
 
 // GET
-router.get('/',(req,res)=>{
-    const p = new Promise((resolve,reject)=>{
-        const user=User
+router.get('/', (req, res) => {
+    const p = new Promise((resolve, reject) => {
+        const user = User
             .find()
             .select();
         resolve(user)
     })
-    p.then(resolve=>res.send(resolve))
+    p.then(resolve => res.send(resolve))
 })
 
-router.get('/:id', async (req,res)=>{
-    const user=await User.findById(req.params.id)
-    !user? res.status(404).send('User does not exist'):res.send(user)
+router.get('/:id', async (req, res) => {
+    const user = await User.findById(req.params.id)
+    !user ? res.status(404).send('User does not exist') : res.send(user)
 })
 
 // POST
-router.post('/', async (req,res)=>{
-    const { error } =validate(req.body) //*Validate function is part of the route module
+router.post('/', async (req, res) => {
+    const { error } = validate(req.body) //*Validate function is part of the route module
     if (error) return res.status(400).send(error.details[0].message)
 
     // *Validate the email and look for user in the database
-    let user = await User.findOne({email:req.body.email})
+    let user = await User.findOne({ email: req.body.email })
     if (!user) return res.status(400).send('Invalid user or password')
 
     // *validating password with bcrypt //*1
-    const validPassword=await bcrypt.compare(req.body.password, user.password)
+    const validPassword = await bcrypt.compare(req.body.password, user.password)
     if (!validPassword) return res.status(400).send('Invalid user or password')
 
     // *2 
@@ -45,23 +45,26 @@ router.post('/', async (req,res)=>{
     //     _id:user._id
     // },config.get('jwtPrivateKey')) //*4
 
-    const token=user.generateAuthToken(); //*5
+
+
+    const token = user.generateAuthToken(); //*5
     res.send(token)
+
 
     // res.send(token)
 })
 
 //*6
 
-function validate(req){
-    const schema=Joi.object({
-        email:Joi.string().min(3).max(255).required().email(),
-        password:Joi.string().min(3).max(255).required()
+function validate(req) {
+    const schema = Joi.object({
+        email: Joi.string().min(3).max(255).required().email(),
+        password: Joi.string().min(3).max(255).required()
     })
-    return schema.validate(req) 
+    return schema.validate(req)
 }
 
-module.exports=router;
+module.exports = router;
 
 // ****----****
 // *1-bcrypt includes a method to compare the client's password with the retrieved one from the database and return a boolean if they match. The method includes the salt

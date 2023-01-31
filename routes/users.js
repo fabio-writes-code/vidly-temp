@@ -1,59 +1,61 @@
-const express=require('express')
-const router=express.Router()
-const mongoose=require('mongoose');
-const {User,validate}=require('../models/users');
-const _=require('lodash')
-const bcrypt=require('bcrypt');
+const express = require('express')
+const router = express.Router()
+const mongoose = require('mongoose');
+const { User, validate } = require('../models/users');
+const _ = require('lodash')
+const bcrypt = require('bcrypt');
 const { route } = require('./rentals');
-const auth=require('../middleware/auth')
+const auth = require('../middleware/auth')
 
 // GET
-router.get('/',(req,res)=>{ //*Using promises
-    const p = new Promise((resolve,reject)=>{
-        const user=User
+router.get('/', (req, res) => { //*Using promises
+    const p = new Promise((resolve, reject) => {
+        const user = User
             .find()
             .select();
         resolve(user)
     })
-    p.then(resolve=>res.send(resolve))
+    p.then(resolve => res.send(resolve))
 })
 
 // *8
-router.get('/me',auth, async(req,res)=>{
+router.get('/me', auth, async (req, res) => {
     // *With middleware added in jwtPrivateKey is not correct the rest of the get won't take place
-    const user=await User.findById(req.user._id).select('-password')
+    const user = await User.findById(req.user._id).select('-password')
     res.send(user)
 })
 
-router.get('/:id', async (req,res)=>{
-    const user=await User.findById(req.params.id)
-    !user? res.status(404).send('User does not exist'):res.send(user)
+router.get('/:id', async (req, res) => {
+    const user = await User.findById(req.params.id)
+    !user ? res.status(404).send('User does not exist') : res.send(user)
 })
 
 // POST
-router.post('/', async (req,res)=>{
-    const { error } =validate(req.body)
+router.post('/', async (req, res) => {
+    const { error } = validate(req.body)
     if (error) return res.status(400).send(error.details[0].message)
 
     // *Validate email for email registration //*1
-    let user = await User.findOne({email:req.body.email})
+    let user = await User.findOne({ email: req.body.email })
     if (user) return res.status(400).send('User already registered.')
 
-    user=new User(_.pick(req.body,['name','email','password'])) //*3
+    user = new User(_.pick(req.body, ['name', 'email', 'password'])) //*3
 
     // *Hashing user password
-    const salt= await bcrypt.genSalt(10)
-    user.password=await bcrypt.hash(user.password,salt) //*4
-    
-    await user.save() 
+    const salt = await bcrypt.genSalt(10)
+    user.password = await bcrypt.hash(user.password, salt) //*4
+
+    await user.save()
 
     // *Automating user authentication upon user creation.
-    const token=user.generateAuthToken();
+    const token = user.generateAuthToken();
 
     // *5 *7
     // const token=jwt.sign({_id:user._id},config.get('jwtPrivateKey'))
-    res.header('x-auth-token',token).send(_.pick(user,['_id','name','email'])) //*6
-
+    res
+        .header('x-auth-token', token)//*6
+        .header('access-control-expose-headers', 'x-auth-token')
+        .send(_.pick(user, ['_id', 'name', 'email']))
     // res.send(_.pick(user,['_id','name','email'])) //*3 Using lodash
 
     // res.send({ //*2 custom response
@@ -62,7 +64,7 @@ router.post('/', async (req,res)=>{
     // })
 })
 
-module.exports=router;
+module.exports = router;
 
 // ****----****
 // *1-Validate that user's email has not been registered previously. Uses mongoose model method findOne and passes object with key value pair

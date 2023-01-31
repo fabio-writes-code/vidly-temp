@@ -3,12 +3,15 @@ const express = require('express');
 const app = express();
 const logger = require('./startup/logger');
 
+
+
 require('./startup/logger');
 require('./startup/routes')(app);
 require('./startup/db')();
 require('./startup/config');
 require('./startup/validation')();
 require('./startup/prod')(app) //* Additional code can be added to check that env is prod
+
 
 // *This code block contained all user defined modules. Moved to ./startup/routes.js
 // const genres=require('./routes/genres'), etc...

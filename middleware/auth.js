@@ -1,15 +1,19 @@
 
-const jwt=require('jsonwebtoken')
-const config=require('config')
+const jwt = require('jsonwebtoken')
+const config = require('config')
 
-module.exports = function (req,res,next){ //*4
-    const token=req.header('x-auth-token') //*2
-    if(!token) return res.status(401).send('Access denied. No token provided')
+module.exports = function (req, res, next) { //*4
+
+    if (!config.get("requiresAuth")) return next();
+
+
+    const token = req.header('x-auth-token') //*2
+    if (!token) return res.status(401).send('Access denied. No token provided')
 
     // *Verify that the token is valid //*3
     try {
-        const decoded = jwt.verify(token,config.get('jwtPrivateKey'))
-        req.user=decoded
+        const decoded = jwt.verify(token, config.get('jwtPrivateKey'))
+        req.user = decoded
         next()
     } catch (ex) {
         res.status(400).send('Invalid Token')

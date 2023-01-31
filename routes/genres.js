@@ -15,6 +15,8 @@ const validateObjectId = require('../middleware/validateObjectId');
 //     {id:4,name:"Drama"},
 // ]
 
+
+
 // GET
 router.get('/', (req, res) => {
     //*Using promises
